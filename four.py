@@ -1,7 +1,8 @@
 import aiohttp
 import asyncio
+from memory_profiler import profile
 
-
+@profile
 async def fetch_status(session, url, semaphore, index):
     async with semaphore:  # Ограничиваем количество одновременно выполняемых запросов
         async with session.get(url) as response:
@@ -9,7 +10,7 @@ async def fetch_status(session, url, semaphore, index):
             print(f"Запрос {index}: Статус {status}")
             return status
 
-
+@profile
 async def fetch_all_statuses(url, num_requests, max_concurrent_requests):
     semaphore = asyncio.Semaphore(max_concurrent_requests)  # Семафор для ограничения количества запросов
     async with aiohttp.ClientSession() as session:
@@ -22,7 +23,7 @@ async def fetch_all_statuses(url, num_requests, max_concurrent_requests):
 
     return statuses
 
-
+@profile
 async def main(url, num_requests, max_concurrent_requests, output_file):
     # Получаем статусы всех запросов
     statuses = await fetch_all_statuses(url, num_requests, max_concurrent_requests)
